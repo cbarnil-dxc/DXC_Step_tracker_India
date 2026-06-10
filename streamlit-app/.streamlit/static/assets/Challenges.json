@@ -1,0 +1,68 @@
+{
+        "Challenge1": {
+            "id": "1",
+            "title": "AI Challenge 1: Explore the DXC Enterprise Prompt Library and submit your best prompt",
+            "description": "Go to the DXC Enterprise Prompt Library (https://prompts.dxc.ai/) and explore the available prompts. Use the filters to narrow down your search, including by function, industry, and model. Once you have explored the library, submit a new prompt that your colleagues could use. Note: the prompt should be useful to your team, department or function. Comment with a screenshot of your submitted prompt on Viva Engage.",
+            "Reward": 15000,
+            "Codes": []
+        },
+
+        "Challenge2": {
+            "id": "2",
+            "title": "Wellbeing Challenge 1: Rainbow Walks",
+            "description": "Office leads will be advertising for on site walks during lunch Between 18th-22nd May. The Rainbow Walk is a simple, inclusive wellbeing activity designed to encourage movement, social connection, and mindfulness. Participants take a short walk and capture photos that match a set of colours building a “rainbow” while taking time away from their desks.",
+            "Reward": 15000,
+            "Codes": []
+        },
+
+        "Challenge3": {
+            "id": "3",
+            "title": "AI Challenge 2: Use Copilot Premium in an M365 app of your choice to complete a task",
+            "description": "Copilot Premium is now rolling out across DXC, bringing powerful new capabilities directly into the Microsoft 365 apps you already use, including Word, Excel, PowerPoint, Outlook, Teams, and OneNote. Using the app of your choice, complete a task with Copilot and explore how it can enhance the way you work. For example, you can turn notes into structured updates or documents in Word, analyse data and surface insights quickly in Excel, build a PowerPoint presentation from an outline or document, summarise long email threads and draft clear responses in Outlook, or catch up on actions and decisions from recorded meetings in Teams. To take part, comment with a screenshot of the Copilot prompt you used in one of the Microsoft 365 apps and explain what it helped you achieve. Please ensure your screenshot does not contain any sensitive information — if needed, you can redact details using the Windows Snipping Tool.",
+            "Reward": 15000,
+            "Codes": []
+        },
+
+        "Challenge4": {
+            "id": "4",
+            "title": "Wellbeing Challenge 2: Wellbeing Playlist",
+            "description": "Music can lift our mood, reduce stress, and help us reset throughout the day. As part of our wellbeing challenge, we’re creating a shared DXC playlist filled with songs that make us feel happy, calm, energised, or simply good. To take part, comment 1–3 songs on the Viva Engage post that improve your mood or support your wellbeing. If you’d like, you can also share why the songs make you feel good, whether it’s a memory, an energy boost, or a calming effect. Feel free to explore and react to other people’s choices, and add more songs anytime throughout the challenge as we build a playlist everyone can turn to whenever they need a lift.",
+            "Reward": 15000,
+            "Codes": []
+        },
+
+        "Challenge5": {
+            "id": "5",
+            "title": "AI Challenge 3: Build your own AI agent",
+            "description": "You can now build your own personal AI agents in Amazon Quick to help improve productivity and give you more time to focus on the work that matters most. No coding, data science, or advanced prompt engineering skills are required — if you can describe how you work, you can build an agent. This task involves opening Amazon Quick at https://us-east-1.quicksight.aws.amazon.com/, navigating to Chat agents → (+) Create chat agent, then adding instructions, connecting context, and experimenting with your new agent. If you’re unsure where to start, the DXC Knowledge Navigator agent can guide you through the process. To complete the challenge, comment on the Viva Engage post with a screenshot of your agent and a short description of what it helps you achieve. Please ensure no sensitive information is visible in your screenshot. Once submitted, the admin team will reply with a code to redeem.",
+            "Reward": 15000,
+            "Codes": []
+        },
+
+        "Challenge6": {
+            "id": "6",
+            "title": "Wellbeing Challenge 3: Small Acts of Kindness",
+            "description": "We're celebrating the positive impact that small acts of kindness can have on both others and ourselves. To take part, reply to the Viva Engage post with a photograph of an act of kindness you've carried out and tell us what you did, why you chose to do it, and how it made you feel. Whether it's supporting a colleague, helping a friend, or doing something thoughtful for a stranger, we'd love to hear your story and see how even the smallest acts of kindness can make a meaningful difference.",
+            "Reward": 15000,
+            "Codes": []
+        },
+
+        "Challenge7": {
+            "id": "7",
+            "title": "AI Challenge 4: Create your own Spring into Summer Logo",
+            "description": "The final AI challenge is to create a unique logo for the “Spring into Summer” challenge using an AI image tool such as Copilot (https://m365.cloud.microsoft/create). Your design should capture the spirit of spring transitioning into summer, reflecting themes of energy, movement, wellbeing, positivity, growth, and fresh starts. Entries should be creative, clearly relevant to the theme, visually impactful, and—most importantly—practical and usable as a logo. Once you’ve created your design, add a comment containing a copy of your logo to the Viva Engage post, and an admin will respond with a claim code.",
+            "Reward": 15000,
+            "Codes": []
+        },
+
+        "Challenge8": {
+            "id": "8",
+            "title": "Pride Month Rainbow Walk",
+            "description": "Join our Pride Month Rainbow Walk from 5th-11th June! Get walking, snap photos of rainbow flag colours, and earn bonus steps. Here's how to participate: 1) Join the UKI Pride Viva Engage Community (2,000 steps bonus). 2) Go for a walk and take photos of rainbow flag colours. 3) Post your photos in the UKI Pride Community on Viva Engage by 11th June midday. Rewards: 2,000 steps bonus for joining the community, plus 2,000 steps for each colour captured (max 20,000 steps). Prize draw entries: 1 entry for posting a Pride flag photo (max 10 entries for 10 colours). Prize available UKI only. Total bonus steps available: 22,000. Post your photos here: https://engage.cloud.microsoft/main/org/dxc.com/groups/eyJfdHlwZSI6Ikdyb3VwIiwiaWQiOiIyMDg3MDA4NDE5ODQifQ/all",
+            "Reward": 0,
+            "variable_reward": true,
+            "Codes": []
+        }
+
+
+}

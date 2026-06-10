@@ -1,0 +1,42 @@
+[server]
+enableStaticServing = true
+
+[client]
+toolbarMode = "minimal"
+
+[theme]
+# Primary Colors - Blue to Orange Gradient Theme
+primaryColor = "#7BA4DB"                    # Pastel blue (matches button gradient)
+backgroundColor = "#FFFFFF"                 # White background
+secondaryBackgroundColor = "#F8FBFF"        # Very light blue (sidebar - matches 25% gradient)
+linkColor = "#FF9A6C"                       # Orange accent (matches button gradient)
+baseRadius = "large"
+buttonRadius = "large"
+borderColor = "#7BA4DB"
+
+# Font Configuration
+font = "Inter-Regular, sans-serif"
+headingFont = "GT-Standard-L-Extended-Medium, sans-serif"
+baseFontSize = 16
+baseFontWeight = 400
+headingFontWeights = 500
+
+# Custom Font Faces
+[[theme.fontFaces]]
+family = "GT-Standard-L-Extended-Medium"
+url = "assets/GT-Standard-L-Extended-Medium.otf"
+weight = "500"
+style = "normal"
+
+[[theme.fontFaces]]
+family = "Inter-Regular"
+url = "assets/Inter-Regular.otf"
+weight = "400"
+style = "normal"
+
+# Sidebar-specific theme
+[theme.sidebar]
+backgroundColor = "#F8FBFF"                 # Very light blue (matches 25% gradient point)
+secondaryBackgroundColor = "#FFFFFF"        # White for widgets in sidebar
+primaryColor = "#7BA4DB"                    # Pastel blue (matches button gradient)
+textColor = "#31333F"                       # Dark text for readability
