@@ -334,3 +334,13 @@ The leaderboard will automatically use these functions via RPC calls. If the fun
 
 This project is licensed under the MIT License.
 
+---
+
+<div align="center">
+<small>
+
+**Disclaimer:** This application was originally created and developed by the DXC UK team. The deployment architecture, infrastructure setup, and implementation for the DXC India team have been replicated based on the original design and specifications provided by the DXC UK team.
+
+</small>
+</div>
+

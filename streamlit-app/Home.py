@@ -445,10 +445,16 @@ with tab3:
             # Prepare data for display
             submission_data = []
             for submission in user_submissions.data:
+                created_at = submission.get('form_created_at')
+                if created_at and 'T' in created_at:
+                    submitted_date = created_at.split('T')[0]
+                else:
+                    submitted_date = created_at or 'N/A'
+                
                 submission_data.append({
                     "Date": submission['form_date'],
                     "Steps": submission['form_stepcount'],
-                    "Submitted": submission['form_created_at'].split('T')[0] if 'T' in submission['form_created_at'] else submission['form_created_at'],
+                    "Submitted": submitted_date,
                     "Status": "Verified" if submission.get('form_verified') else "Pending",
                     "ID": submission['form_id']
                 })

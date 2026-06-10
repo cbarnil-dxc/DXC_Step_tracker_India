@@ -32,9 +32,17 @@ def render_header(title: str, subtitle: str):
 
 
 def render_footer():
-    """Render the DXC Technology footer with blue divider."""
+    """Render the DXC Technology footer with blue divider and disclaimer."""
     st.markdown(
         "<div style='margin-top:60px; padding-top:20px; border-top:3px solid #7BA4DB;'></div>",
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        "<div style='text-align: center; font-size: 0.75rem; color: #666; margin-top: 30px; padding: 20px;'>"
+        "<p><strong>Disclaimer:</strong> This application was originally created and developed by the DXC UK team. "
+        "The deployment architecture, infrastructure setup, and implementation for the DXC India team have been replicated "
+        "based on the original design and specifications provided by the DXC UK team.</p>"
+        "</div>",
         unsafe_allow_html=True
     )
 
