@@ -145,8 +145,8 @@ with tab1:
         with date_col: 
             step_date = st.date_input(
                 "Date",
-                min_value=date(2026, 5, 14),
-                max_value=date(2026, 6, 11),
+                min_value=date.today() - timedelta(days=3),
+                max_value=date.today(),
                 value=date.today(),
                 help="Select the date when you recorded these steps. Valid dates: 14/05/26 to 11/06/26."
             )
@@ -188,7 +188,7 @@ with tab1:
             elif steps >= 20000 and not screenshot:
                 st.error("Screenshot required for submissions 20,000+ steps.")
             else:
-                # --- Daily submission limit check (10 per day) ---
+                # --- Daily submission limit check (3 per day) ---
                 try:
                     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
                     daily_submissions = supabase.table("forms") \
@@ -199,9 +199,9 @@ with tab1:
                     
                     submission_count = len(daily_submissions.data) if daily_submissions.data else 0
                     
-                    if submission_count >= 10:
-                        st.error("Daily submission limit reached (10 per day). Please try again tomorrow.")
-                        log_audit_event("RATE_LIMIT_EXCEEDED", user_email, f"Daily limit: {submission_count}/10")
+                    if submission_count >= 3:
+                        st.error("Daily submission limit reached (3 per day). Please try again tomorrow.")
+                        log_audit_event("RATE_LIMIT_EXCEEDED", user_email, f"Daily limit: {submission_count}/3")
                         st.stop()
                 except Exception:
                     logging.error("Error checking daily submission limit")
@@ -276,104 +276,104 @@ with tab1:
                     st.error("Error processing upload.")
 
 # ------------------ TAB 2: AI Challenges ------------------
-with tab2:
-    st.header("✦ AI & Wellbeing Challenges")
-    st.caption("Complete challenges and redeem your unique claim codes.")
+# with tab2:
+#     st.header("✦ AI & Wellbeing Challenges")
+#     st.caption("Complete challenges and redeem your unique claim codes.")
 
-    # ------------------ Mock Challenge Data (UI only) ------------------
+#     # ------------------ Mock Challenge Data (UI only) ------------------
 
-    # ------------------ Challenges List ------------------
-    Challenges = get_all_challenges()  # Load challenges to ensure file is read before code generation
-    for ch in Challenges:
-        with st.container(border=True):
-            left, right = st.columns([8, 2])
+#     # ------------------ Challenges List ------------------
+#     Challenges = get_all_challenges()  # Load challenges to ensure file is read before code generation
+#     for ch in Challenges:
+#         with st.container(border=True):
+#             left, right = st.columns([8, 2])
 
-            with left:
-                st.subheader(Challenges[ch]["title"])
-                st.write(Challenges[ch]["description"])
-                # Display reward - show "Variable" for variable reward challenges
-                if Challenges[ch].get("variable_reward", False):
-                    st.caption("Reward: Variable (based on code)")
-                else:
-                    st.caption(f"Reward: {Challenges[ch]['Reward']:,} steps")
+#             with left:
+#                 st.subheader(Challenges[ch]["title"])
+#                 st.write(Challenges[ch]["description"])
+#                 # Display reward - show "Variable" for variable reward challenges
+#                 if Challenges[ch].get("variable_reward", False):
+#                     st.caption("Reward: Variable (based on code)")
+#                 else:
+#                     st.caption(f"Reward: {Challenges[ch]['Reward']:,} steps")
 
-            with right:
-                # Check if user has already completed this challenge
-                challenge_id = Challenges[ch]['id']
-                expected_filepath = f"challenge_{challenge_id}_complete"
-                toggle_key = f"show_redeem_{Challenges[ch]['id']}"
-                challenge_completed = False
+#             with right:
+#                 # Check if user has already completed this challenge
+#                 challenge_id = Challenges[ch]['id']
+#                 expected_filepath = f"challenge_{challenge_id}_complete"
+#                 toggle_key = f"show_redeem_{Challenges[ch]['id']}"
+#                 challenge_completed = False
                 
-                try:
-                    existing_completion = supabase.table("forms").select("*").eq("user_id", user_id).eq("form_filepath", expected_filepath).execute()
+#                 try:
+#                     existing_completion = supabase.table("forms").select("*").eq("user_id", user_id).eq("form_filepath", expected_filepath).execute()
                     
-                    if existing_completion.data:
-                        st.success("Challenge Complete ✔")
-                        challenge_completed = True
-                    else:
-                        if toggle_key not in st.session_state:
-                            st.session_state[toggle_key] = False
+#                     if existing_completion.data:
+#                         st.success("Challenge Complete ✔")
+#                         challenge_completed = True
+#                     else:
+#                         if toggle_key not in st.session_state:
+#                             st.session_state[toggle_key] = False
 
-                        if st.button("Redeem", key=f"redeem_btn_{Challenges[ch]['id']}", type="secondary"):
-                            st.session_state[toggle_key] = not st.session_state[toggle_key]
-                except Exception:
-                    if toggle_key not in st.session_state:
-                        st.session_state[toggle_key] = False
+#                         if st.button("Redeem", key=f"redeem_btn_{Challenges[ch]['id']}", type="secondary"):
+#                             st.session_state[toggle_key] = not st.session_state[toggle_key]
+#                 except Exception:
+#                     if toggle_key not in st.session_state:
+#                         st.session_state[toggle_key] = False
 
-                    if st.button("Redeem", key=f"redeem_btn_{Challenges[ch]['id']}", type="secondary"):
-                        st.session_state[toggle_key] = not st.session_state[toggle_key]
+#                     if st.button("Redeem", key=f"redeem_btn_{Challenges[ch]['id']}", type="secondary"):
+#                         st.session_state[toggle_key] = not st.session_state[toggle_key]
 
-            # ------------------ Redeem UI ------------------
-            if st.session_state.get(toggle_key, False) and not challenge_completed:
-                st.markdown("**Redeem your challenge**")
+#             # ------------------ Redeem UI ------------------
+#             if st.session_state.get(toggle_key, False) and not challenge_completed:
+#                 st.markdown("**Redeem your challenge**")
 
-                with st.form(key=f"redeem_form_{Challenges[ch]['id']}", clear_on_submit=True):
-                    claim_code = st.text_input(
-                        "Enter unique claim code",
-                        placeholder="e.g. DXC-STEP-ABC123"
-                    )
+#                 with st.form(key=f"redeem_form_{Challenges[ch]['id']}", clear_on_submit=True):
+#                     claim_code = st.text_input(
+#                         "Enter unique claim code",
+#                         placeholder="e.g. DXC-STEP-ABC123"
+#                     )
 
-                    submitted = st.form_submit_button("Submit Code", type="primary")
-                    if submitted:
-                        is_valid, challenge_reward = validate_claim_code(Challenges, claim_code, challenge_id)
-                        if not is_valid:
-                            st.error("Please enter a valid claim code.")
-                        else:
-                            try:
-                                # Check if code has already been used by any user
-                                code_hash = hashlib.sha256(claim_code.encode()).hexdigest()
-                                existing_code_check = supabase.table("forms").select("*").eq("challenge_code", code_hash).execute()
+#                     submitted = st.form_submit_button("Submit Code", type="primary")
+#                     if submitted:
+#                         is_valid, challenge_reward = validate_claim_code(Challenges, claim_code, challenge_id)
+#                         if not is_valid:
+#                             st.error("Please enter a valid claim code.")
+#                         else:
+#                             try:
+#                                 # Check if code has already been used by any user
+#                                 code_hash = hashlib.sha256(claim_code.encode()).hexdigest()
+#                                 existing_code_check = supabase.table("forms").select("*").eq("challenge_code", code_hash).execute()
                                 
-                                if existing_code_check.data:
-                                    st.error("This code has already been used.")
-                                else:
-                                    # Insert challenge completion into forms table
-                                    form_filepath = expected_filepath
-                                    current_date = datetime.now().date()
-                                    current_timestamp = datetime.now().isoformat()
+#                                 if existing_code_check.data:
+#                                     st.error("This code has already been used.")
+#                                 else:
+#                                     # Insert challenge completion into forms table
+#                                     form_filepath = expected_filepath
+#                                     current_date = datetime.now().date()
+#                                     current_timestamp = datetime.now().isoformat()
                                     
-                                    supabase.table("forms").insert({
-                                        "form_filepath": form_filepath,
-                                        "form_stepcount": challenge_reward,
-                                        "form_date": str(current_date),
-                                        "user_id": user_id,
-                                        "form_created_at": current_timestamp,
-                                        "form_verified": True,
-                                        "challenge_code": code_hash
-                                    }).execute()
+#                                     supabase.table("forms").insert({
+#                                         "form_filepath": form_filepath,
+#                                         "form_stepcount": challenge_reward,
+#                                         "form_date": str(current_date),
+#                                         "user_id": user_id,
+#                                         "form_created_at": current_timestamp,
+#                                         "form_verified": True,
+#                                         "challenge_code": code_hash
+#                                     }).execute()
                                     
-                                    log_audit_event("CHALLENGE_REDEMPTION", user_email, f"Challenge ID: {challenge_id}, Reward: {challenge_reward}, Code used")
-                                    st.session_state[toggle_key] = False
-                                    st.rerun()
-                            except APIError:
-                                logging.error("Supabase insert failed (challenge redemption)")
-                                st.error("Database rejected the challenge submission.")
-                                st.info("Please contact admin to verify database permissions (RLS/insert policy).")
-                            except Exception:
-                                st.error("Error processing challenge completion.")
-                                logging.error("Challenge completion error")
+#                                     log_audit_event("CHALLENGE_REDEMPTION", user_email, f"Challenge ID: {challenge_id}, Reward: {challenge_reward}, Code used")
+#                                     st.session_state[toggle_key] = False
+#                                     st.rerun()
+#                             except APIError:
+#                                 logging.error("Supabase insert failed (challenge redemption)")
+#                                 st.error("Database rejected the challenge submission.")
+#                                 st.info("Please contact admin to verify database permissions (RLS/insert policy).")
+#                             except Exception:
+#                                 st.error("Error processing challenge completion.")
+#                                 logging.error("Challenge completion error")
 # ------------------ TAB 3: DAILY PROGRESS ------------------
-with tab3:
+with tab2:
     st.header("➜ Daily Progress")
     st.caption("Track your step history, streaks, and statistics.")
     df = fetch_user_forms(user_id)
@@ -487,297 +487,297 @@ with tab3:
             st.info("No submissions found.")
 
 # ------------------ TAB 4: TEAM MANAGEMENT ------------------
-with tab4:
-    st.header("⚑ Team Management")
-    st.caption("Join or create teams to compete together.")
+# with tab4:
+#     st.header("⚑ Team Management")
+#     st.caption("Join or create teams to compete together.")
     
-    # Get user's current team
-    try:
-        user_data = supabase.table("users").select("team_id").eq("user_id", user_id).execute()
-        current_team_id = user_data.data[0].get("team_id") if user_data.data else None
-    except Exception:
-        current_team_id = None
+#     # Get user's current team
+#     try:
+#         user_data = supabase.table("users").select("team_id").eq("user_id", user_id).execute()
+#         current_team_id = user_data.data[0].get("team_id") if user_data.data else None
+#     except Exception:
+#         current_team_id = None
     
-    if current_team_id:
-        # User is in a team - show team info
-        try:
-            team_info = supabase.table("teams").select("*").eq("team_id", current_team_id).execute()
-            team_members = supabase.table("users").select("user_id, user_name").eq("team_id", current_team_id).execute()
+#     if current_team_id:
+#         # User is in a team - show team info
+#         try:
+#             team_info = supabase.table("teams").select("*").eq("team_id", current_team_id).execute()
+#             team_members = supabase.table("users").select("user_id, user_name").eq("team_id", current_team_id).execute()
             
-            if team_info.data:
-                team = team_info.data[0]
+#             if team_info.data:
+#                 team = team_info.data[0]
                 
-                st.subheader("Team Information")
-                st.markdown(f"**Team Name:** {team['team_name']}")
+#                 st.subheader("Team Information")
+#                 st.markdown(f"**Team Name:** {team['team_name']}")
                 
-                # Get team leader name from user_id
-                try:
-                    leader_info = supabase.table("users").select("user_name").eq("user_id", team['team_leader_id']).execute()
-                    leader_name = leader_info.data[0]['user_name'] if leader_info.data else "Unknown"
-                except Exception:
-                    leader_name = "Unknown"
-                st.markdown(f"**Team Leader:** {leader_name}")
+#                 # Get team leader name from user_id
+#                 try:
+#                     leader_info = supabase.table("users").select("user_name").eq("user_id", team['team_leader_id']).execute()
+#                     leader_name = leader_info.data[0]['user_name'] if leader_info.data else "Unknown"
+#                 except Exception:
+#                     leader_name = "Unknown"
+#                 st.markdown(f"**Team Leader:** {leader_name}")
                 
-                # Team member performance table
-                st.subheader("Team Member Performance")
+#                 # Team member performance table
+#                 st.subheader("Team Member Performance")
                 
-                # Get performance data for each team member
-                member_data = []
-                for member in team_members.data:
-                    member_user_id = member['user_id']
-                    member_name = member['user_name']
+#                 # Get performance data for each team member
+#                 member_data = []
+#                 for member in team_members.data:
+#                     member_user_id = member['user_id']
+#                     member_name = member['user_name']
                     
-                    # Get all forms for this member
-                    try:
-                        member_forms = supabase.table("forms").select("*").eq("user_id", member_user_id).execute()
+#                     # Get all forms for this member
+#                     try:
+#                         member_forms = supabase.table("forms").select("*").eq("user_id", member_user_id).execute()
                         
-                        if member_forms.data:
-                            total_steps = sum(f['form_stepcount'] for f in member_forms.data)
-                            submission_count = len(member_forms.data)
+#                         if member_forms.data:
+#                             total_steps = sum(f['form_stepcount'] for f in member_forms.data)
+#                             submission_count = len(member_forms.data)
                             
-                            # Calculate average daily steps (group by date first)
-                            member_df = pd.DataFrame(member_forms.data)
-                            member_df["form_date"] = pd.to_datetime(member_df["form_date"]).dt.date
-                            daily_steps = member_df.groupby("form_date")["form_stepcount"].sum().reset_index()
-                            days_participated = len(daily_steps)
-                            if days_participated > 0:
-                                avg_daily_steps = daily_steps["form_stepcount"].mean()
-                            else:
-                                avg_daily_steps = 0
+#                             # Calculate average daily steps (group by date first)
+#                             member_df = pd.DataFrame(member_forms.data)
+#                             member_df["form_date"] = pd.to_datetime(member_df["form_date"]).dt.date
+#                             daily_steps = member_df.groupby("form_date")["form_stepcount"].sum().reset_index()
+#                             days_participated = len(daily_steps)
+#                             if days_participated > 0:
+#                                 avg_daily_steps = daily_steps["form_stepcount"].mean()
+#                             else:
+#                                 avg_daily_steps = 0
                             
-                            # Get last submission date
-                            sorted_forms = sorted(member_forms.data, key=lambda x: x['form_created_at'], reverse=True)
-                            last_submission = sorted_forms[0]['form_created_at'] if sorted_forms else "Never"
+#                             # Get last submission date
+#                             sorted_forms = sorted(member_forms.data, key=lambda x: x['form_created_at'], reverse=True)
+#                             last_submission = sorted_forms[0]['form_created_at'] if sorted_forms else "Never"
                             
-                            # Calculate days since last submission
-                            if last_submission != "Never":
-                                try:
-                                    last_date = datetime.fromisoformat(last_submission)
-                                    days_since = (datetime.now() - last_date).days
-                                    last_submission_display = f"{last_date.strftime('%Y-%m-%d')} ({days_since} days ago)"
-                                except:
-                                    last_submission_display = last_submission
-                            else:
-                                last_submission_display = "Never"
-                        else:
-                            total_steps = 0
-                            avg_daily_steps = 0
-                            last_submission_display = "Never"
-                            submission_count = 0
+#                             # Calculate days since last submission
+#                             if last_submission != "Never":
+#                                 try:
+#                                     last_date = datetime.fromisoformat(last_submission)
+#                                     days_since = (datetime.now() - last_date).days
+#                                     last_submission_display = f"{last_date.strftime('%Y-%m-%d')} ({days_since} days ago)"
+#                                 except:
+#                                     last_submission_display = last_submission
+#                             else:
+#                                 last_submission_display = "Never"
+#                         else:
+#                             total_steps = 0
+#                             avg_daily_steps = 0
+#                             last_submission_display = "Never"
+#                             submission_count = 0
                         
-                        member_data.append({
-                            "Team Member Name": member_name,
-                            "Total Steps": total_steps,
-                            "Average Daily Steps": round(avg_daily_steps),
-                            "Total Submissions": submission_count,
-                            "Last Submission": last_submission_display
-                        })
-                    except Exception:
-                        member_data.append({
-                            "Team Member Name": member_name,
-                            "Total Steps": 0,
-                            "Average Daily Steps": 0,
-                            "Total Submissions": 0,
-                            "Last Submission": "Error loading data"
-                        })
+#                         member_data.append({
+#                             "Team Member Name": member_name,
+#                             "Total Steps": total_steps,
+#                             "Average Daily Steps": round(avg_daily_steps),
+#                             "Total Submissions": submission_count,
+#                             "Last Submission": last_submission_display
+#                         })
+#                     except Exception:
+#                         member_data.append({
+#                             "Team Member Name": member_name,
+#                             "Total Steps": 0,
+#                             "Average Daily Steps": 0,
+#                             "Total Submissions": 0,
+#                             "Last Submission": "Error loading data"
+#                         })
                 
-                # Sort by total steps (descending)
-                member_data.sort(key=lambda x: x["Total Steps"], reverse=True)
+#                 # Sort by total steps (descending)
+#                 member_data.sort(key=lambda x: x["Total Steps"], reverse=True)
                 
-                # Display as non-interactive table
-                if member_data:
-                    st.dataframe(
-                        pd.DataFrame(member_data),
-                        use_container_width=True,
-                        hide_index=True
-                    )
-                else:
-                    st.info("No team member data available.")
+#                 # Display as non-interactive table
+#                 if member_data:
+#                     st.dataframe(
+#                         pd.DataFrame(member_data),
+#                         use_container_width=True,
+#                         hide_index=True
+#                     )
+#                 else:
+#                     st.info("No team member data available.")
                 
-                st.markdown("---")
+#                 st.markdown("---")
                 
-                # Check if current user is the team leader
-                is_team_leader = (user_id == team['team_leader_id'])
+#                 # Check if current user is the team leader
+#                 is_team_leader = (user_id == team['team_leader_id'])
                 
-                if is_team_leader:
-                    # Team leader can delete the team
-                    if st.button("Delete Team", type="secondary", key="delete_team_btn"):
-                        try:
-                            # Unassign all team members
-                            supabase.table("users").update({"team_id": None}).eq("team_id", current_team_id).execute()
-                            # Delete the team
-                            supabase.table("teams").delete().eq("team_id", current_team_id).execute()
-                            st.success("Team deleted successfully. All members have been unassigned.")
-                            st.rerun()
-                        except Exception:
-                            st.error("Error deleting team. Please try again.")
-                else:
-                    # Regular members can leave the team
-                    if st.button("Leave Team", type="secondary", key="leave_team_btn"):
-                        try:
-                            supabase.table("users").update({"team_id": None}).eq("user_id", user_id).execute()
-                            st.success("You have left the team.")
-                            st.rerun()
-                        except Exception:
-                            st.error("Error leaving team. Please try again.")
-        except Exception:
-            st.error("Error loading team information. Please try again.")
-    else:
-        # User is not in a team
-        # Check if user is already a team leader
-        try:
-            is_leader = supabase.table("teams").select("team_id").eq("team_leader_id", user_id).execute()
-            user_is_leader = len(is_leader.data) > 0 if is_leader.data else False
-        except Exception:
-            user_is_leader = False
+#                 if is_team_leader:
+#                     # Team leader can delete the team
+#                     if st.button("Delete Team", type="secondary", key="delete_team_btn"):
+#                         try:
+#                             # Unassign all team members
+#                             supabase.table("users").update({"team_id": None}).eq("team_id", current_team_id).execute()
+#                             # Delete the team
+#                             supabase.table("teams").delete().eq("team_id", current_team_id).execute()
+#                             st.success("Team deleted successfully. All members have been unassigned.")
+#                             st.rerun()
+#                         except Exception:
+#                             st.error("Error deleting team. Please try again.")
+#                 else:
+#                     # Regular members can leave the team
+#                     if st.button("Leave Team", type="secondary", key="leave_team_btn"):
+#                         try:
+#                             supabase.table("users").update({"team_id": None}).eq("user_id", user_id).execute()
+#                             st.success("You have left the team.")
+#                             st.rerun()
+#                         except Exception:
+#                             st.error("Error leaving team. Please try again.")
+#         except Exception:
+#             st.error("Error loading team information. Please try again.")
+#     else:
+#         # User is not in a team
+#         # Check if user is already a team leader
+#         try:
+#             is_leader = supabase.table("teams").select("team_id").eq("team_leader_id", user_id).execute()
+#             user_is_leader = len(is_leader.data) > 0 if is_leader.data else False
+#         except Exception:
+#             user_is_leader = False
         
-        # Show tabs based on whether user is a team leader
-        if user_is_leader:
-            # User is a team leader but not in a team - only show join option
-            st.warning("You already created a team. You can only join existing teams.")
+#         # Show tabs based on whether user is a team leader
+#         if user_is_leader:
+#             # User is a team leader but not in a team - only show join option
+#             st.warning("You already created a team. You can only join existing teams.")
             
-            st.subheader("Available Teams")
-            try:
-                all_teams = supabase.table("teams").select("*").execute()
+#             st.subheader("Available Teams")
+#             try:
+#                 all_teams = supabase.table("teams").select("*").execute()
                 
-                if all_teams.data:
-                    available_teams = []
-                    for team in all_teams.data:
-                        members = supabase.table("users").select("user_id").eq("team_id", team["team_id"]).execute()
-                        member_count = len(members.data) if members.data else 0
+#                 if all_teams.data:
+#                     available_teams = []
+#                     for team in all_teams.data:
+#                         members = supabase.table("users").select("user_id").eq("team_id", team["team_id"]).execute()
+#                         member_count = len(members.data) if members.data else 0
                         
-                        if member_count < 4:
-                            team["member_count"] = member_count
-                            available_teams.append(team)
+#                         if member_count < 4:
+#                             team["member_count"] = member_count
+#                             available_teams.append(team)
                     
-                    if available_teams:
-                        for team in available_teams:
-                            col1, col2, col3 = st.columns([3, 1, 1])
+#                     if available_teams:
+#                         for team in available_teams:
+#                             col1, col2, col3 = st.columns([3, 1, 1])
                             
-                            with col1:
-                                st.markdown(f"### {team['team_name']}")
-                                # Get leader name
-                                try:
-                                    leader_info = supabase.table("users").select("user_name").eq("user_id", team['team_leader_id']).execute()
-                                    leader_name = leader_info.data[0]['user_name'] if leader_info.data else "Unknown"
-                                except Exception:
-                                    leader_name = "Unknown"
-                                st.caption(f"Leader: {leader_name}")
+#                             with col1:
+#                                 st.markdown(f"### {team['team_name']}")
+#                                 # Get leader name
+#                                 try:
+#                                     leader_info = supabase.table("users").select("user_name").eq("user_id", team['team_leader_id']).execute()
+#                                     leader_name = leader_info.data[0]['user_name'] if leader_info.data else "Unknown"
+#                                 except Exception:
+#                                     leader_name = "Unknown"
+#                                 st.caption(f"Leader: {leader_name}")
                             
-                            with col2:
-                                st.metric("Members", f"{team['member_count']}/4")
+#                             with col2:
+#                                 st.metric("Members", f"{team['member_count']}/4")
                             
-                            with col3:
-                                if st.button("Join", key=f"join_leader_{team['team_id']}", type="secondary"):
-                                    try:
-                                        supabase.table("users").update({"team_id": team['team_id']}).eq("user_id", user_id).execute()
-                                        st.success("Successfully joined team!")
-                                        st.rerun()
-                                    except Exception:
-                                        st.error("Error joining team.")
+#                             with col3:
+#                                 if st.button("Join", key=f"join_leader_{team['team_id']}", type="secondary"):
+#                                     try:
+#                                         supabase.table("users").update({"team_id": team['team_id']}).eq("user_id", user_id).execute()
+#                                         st.success("Successfully joined team!")
+#                                         st.rerun()
+#                                     except Exception:
+#                                         st.error("Error joining team.")
                             
-                            st.markdown("---")
-                    else:
-                        st.info("No teams available to join.")
-                else:
-                    st.info("No teams exist yet.")
-            except Exception:
-                st.error("Error loading teams.")
-        else:
-            # User is not a team leader - show both tabs
-            subtab1, subtab2 = st.tabs(["Join a Team", "Create a Team"])
+#                             st.markdown("---")
+#                     else:
+#                         st.info("No teams available to join.")
+#                 else:
+#                     st.info("No teams exist yet.")
+#             except Exception:
+#                 st.error("Error loading teams.")
+#         else:
+#             # User is not a team leader - show both tabs
+#             subtab1, subtab2 = st.tabs(["Join a Team", "Create a Team"])
             
-            with subtab1:
-                st.subheader("Available Teams")
-                try:
-                    all_teams = supabase.table("teams").select("*").execute()
+#             with subtab1:
+#                 st.subheader("Available Teams")
+#                 try:
+#                     all_teams = supabase.table("teams").select("*").execute()
                     
-                    if all_teams.data:
-                        available_teams = []
-                        for team in all_teams.data:
-                            members = supabase.table("users").select("user_id").eq("team_id", team["team_id"]).execute()
-                            member_count = len(members.data) if members.data else 0
+#                     if all_teams.data:
+#                         available_teams = []
+#                         for team in all_teams.data:
+#                             members = supabase.table("users").select("user_id").eq("team_id", team["team_id"]).execute()
+#                             member_count = len(members.data) if members.data else 0
                             
-                            if member_count < 4:
-                                team["member_count"] = member_count
-                                available_teams.append(team)
+#                             if member_count < 4:
+#                                 team["member_count"] = member_count
+#                                 available_teams.append(team)
                         
-                        if available_teams:
-                            for team in available_teams:
-                                col1, col2, col3 = st.columns([3, 1, 1])
+#                         if available_teams:
+#                             for team in available_teams:
+#                                 col1, col2, col3 = st.columns([3, 1, 1])
                                 
-                                with col1:
-                                    st.markdown(f"### {team['team_name']}")
-                                    # Get leader name
-                                    try:
-                                        leader_info = supabase.table("users").select("user_name").eq("user_id", team['team_leader_id']).execute()
-                                        leader_name = leader_info.data[0]['user_name'] if leader_info.data else "Unknown"
-                                    except Exception:
-                                        leader_name = "Unknown"
-                                    st.caption(f"Leader: {leader_name}")
+#                                 with col1:
+#                                     st.markdown(f"### {team['team_name']}")
+#                                     # Get leader name
+#                                     try:
+#                                         leader_info = supabase.table("users").select("user_name").eq("user_id", team['team_leader_id']).execute()
+#                                         leader_name = leader_info.data[0]['user_name'] if leader_info.data else "Unknown"
+#                                     except Exception:
+#                                         leader_name = "Unknown"
+#                                     st.caption(f"Leader: {leader_name}")
                                 
-                                with col2:
-                                    st.metric("Members", f"{team['member_count']}/4")
+#                                 with col2:
+#                                     st.metric("Members", f"{team['member_count']}/4")
                                 
-                                with col3:
-                                    if st.button("Join", key=f"join_{team['team_id']}", type="secondary"):
-                                        try:
-                                            supabase.table("users").update({"team_id": team['team_id']}).eq("user_id", user_id).execute()
-                                            st.success("Successfully joined team!")
-                                            st.rerun()
-                                        except Exception:
-                                            st.error("Error joining team.")
+#                                 with col3:
+#                                     if st.button("Join", key=f"join_{team['team_id']}", type="secondary"):
+#                                         try:
+#                                             supabase.table("users").update({"team_id": team['team_id']}).eq("user_id", user_id).execute()
+#                                             st.success("Successfully joined team!")
+#                                             st.rerun()
+#                                         except Exception:
+#                                             st.error("Error joining team.")
                                 
-                                st.markdown("---")
-                        else:
-                            st.info("No teams available to join.")
-                    else:
-                        st.info("No teams exist yet. Be the first to create one!")
-                except Exception:
-                    st.error("Error loading teams.")
+#                                 st.markdown("---")
+#                         else:
+#                             st.info("No teams available to join.")
+#                     else:
+#                         st.info("No teams exist yet. Be the first to create one!")
+#                 except Exception:
+#                     st.error("Error loading teams.")
             
-            with subtab2:
-                st.subheader("Create Your Team")
-                st.write("As team leader, you'll manage your team.")
+#             with subtab2:
+#                 st.subheader("Create Your Team")
+#                 st.write("As team leader, you'll manage your team.")
                 
-                with st.form("create_team_form"):
-                    team_name = st.text_input(
-                        "Team Name",
-                        max_chars=50,
-                        help="Choose a unique name for your team (3-50 characters)"
-                    )
+#                 with st.form("create_team_form"):
+#                     team_name = st.text_input(
+#                         "Team Name",
+#                         max_chars=50,
+#                         help="Choose a unique name for your team (3-50 characters)"
+#                     )
                     
-                    submitted = st.form_submit_button("Create Team", type="secondary")
+#                     submitted = st.form_submit_button("Create Team", type="secondary")
                     
-                    if submitted:
-                        if not team_name or len(team_name.strip()) < 3:
-                            st.error("Team name must be at least 3 characters long.")
-                        elif len(team_name.strip()) > 50:
-                            st.error("Team name must be less than 50 characters.")
-                        else:
-                            try:
-                                existing = supabase.table("teams").select("team_name").eq("team_name", team_name.strip()).execute()
+#                     if submitted:
+#                         if not team_name or len(team_name.strip()) < 3:
+#                             st.error("Team name must be at least 3 characters long.")
+#                         elif len(team_name.strip()) > 50:
+#                             st.error("Team name must be less than 50 characters.")
+#                         else:
+#                             try:
+#                                 existing = supabase.table("teams").select("team_name").eq("team_name", team_name.strip()).execute()
                                 
-                                if existing.data:
-                                    st.error("A team with this name already exists.")
-                                else:
-                                    team_response = supabase.table("teams").insert({
-                                        "team_name": team_name.strip(),
-                                        "team_leader_id": user_id
-                                    }).execute()
+#                                 if existing.data:
+#                                     st.error("A team with this name already exists.")
+#                                 else:
+#                                     team_response = supabase.table("teams").insert({
+#                                         "team_name": team_name.strip(),
+#                                         "team_leader_id": user_id
+#                                     }).execute()
                                     
-                                    if team_response.data:
-                                        new_team_id = team_response.data[0]["team_id"]
-                                        supabase.table("users").update({"team_id": new_team_id}).eq("user_id", user_id).execute()
+#                                     if team_response.data:
+#                                         new_team_id = team_response.data[0]["team_id"]
+#                                         supabase.table("users").update({"team_id": new_team_id}).eq("user_id", user_id).execute()
                                         
-                                        st.success(f"Team '{team_name}' created successfully!")
-                                        st.balloons()
-                                        st.rerun()
-                                    else:
-                                        st.error("Error creating team.")
-                            except Exception:
-                                logging.error("Error creating team")
-                                st.error("Unable to create team right now. Please try again.")
+#                                         st.success(f"Team '{team_name}' created successfully!")
+#                                         st.balloons()
+#                                         st.rerun()
+#                                     else:
+#                                         st.error("Error creating team.")
+#                             except Exception:
+#                                 logging.error("Error creating team")
+#                                 st.error("Unable to create team right now. Please try again.")
 
 # ------------------ FOOTER (ALWAYS RENDER) ------------------
 render_footer()
