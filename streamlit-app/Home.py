@@ -99,8 +99,7 @@ if render_sidebar_welcome():
     handle_logout()
 
 # ------------------ TABS ------------------
-tab1, tab2, tab3, tab4 = st.tabs(["✚ Submit Steps", "✦ AI & Wellbeing Challenges",  "➜ Daily Progress", "⚑ Teams"])
-
+tab1, tab2 = st.tabs(["✚ Submit Steps","➜ Daily Progress"])
 # ------------------ TAB 1: SUBMIT STEPS ------------------
 with tab1:
     st.header("✚ Submit Your Steps")
