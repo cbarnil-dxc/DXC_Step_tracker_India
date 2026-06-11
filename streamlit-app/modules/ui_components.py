@@ -42,6 +42,10 @@ def render_footer():
         "<p><strong>Disclaimer:</strong> This application was originally created and developed by the DXC UK team. "
         "The deployment architecture, infrastructure setup, and implementation for the DXC India team have been replicated "
         "based on the original design and specifications provided by the DXC UK team.</p>"
+        "<p style='color: #E4572E; font-weight: 600; margin-top: 12px;'>"
+        "The content of this message is confidential and proprietary business information of the DXC Technology Company (\"DXC\"). "
+        "It is not intended to be distributed to any persons outside of DXC.<br>"
+        "<strong>DXC Internal</strong></p>"
         "</div>",
         unsafe_allow_html=True
     )
